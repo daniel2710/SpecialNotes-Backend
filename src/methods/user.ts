@@ -8,8 +8,18 @@ export const getUserByEmail = (email: string) =>{
     return UserModel.findOne({ email })
 }
 
+export const getUserByUsername = (username: string) =>{
+    return UserModel.findOne({ username })
+}
+
 export const getUserById = (id: string) =>{
     return UserModel.findById(id)
+}
+
+export const getUserBySessionToken = (sessionToken: string) =>{
+    UserModel.findOne({
+        'authentication.sessionToken': sessionToken
+    })
 }
 
 export const createUser = (values: Record<string, any>) =>{

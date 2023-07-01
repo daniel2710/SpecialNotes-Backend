@@ -1,71 +1,99 @@
 import express from 'express';
-import { createUser, getUserByEmail } from '../methods/user';
-import { authentication, randomToken } from '../helpers/index'
+import { createUser, getUserByEmail, getUserByUsername } from '../methods/user';
+import { authentication, randomToken } from '../helpers'
+
+export const login = async (req: express.Request, res: express.Response) =>{
+    try {
+        const { email, password } = req.body
+        
+        if(!email){
+            return res.status(400).json({ status: 'Failed', message: `email is required` });
+        }else if(!password){
+            return res.status(400).json({ status: 'Failed', message: `password is required` });
+        }
+
+        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password')
+        if(!user){
+            return res.status(400).json({ status: 'Failed', message: `user does not exist` });
+        }
+        
+        const expectedHash = authentication(user.authentication?.salt, password)
+        
+        if(user.authentication?.password !== expectedHash){
+            return res.status(400).json({ status: 'Incorrect password' });
+        }
+
+        const salt = randomToken()
+        
+        user.authentication!.sessionToken! = authentication(salt, user._id.toString())
+        await user.save();
+
+        res.cookie('SPECIALNOTES-AUTH', user.authentication!.sessionToken, {
+            domain: 'localhost',
+            path: '/'
+        })
+        return res.status(200).json(user).end()
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400)
+    }
+}
 
 export const register = async (req: express.Request, res: express.Response) =>{
-
+    
     try {
         const { name, lastname, birthday, username, email, password } = req.body;
-
-        let missingField;
-
-        switch (true) {
-            case !name:
-                console.log("Please enter");
-                missingField = 'Name';
-                break;
-            case !lastname:
-                console.log("Please enter");
-                missingField = 'Lastname';
-                break;
-            case !username:
-                console.log("Please enter");
-                missingField = 'Username';
-                break;
-            case !email:
-                console.log("Please enter");
-                missingField = 'Email';
-                break;
-            case !password:
-                console.log("Please enter");
-                missingField = 'Password';
-                break;
-            default:
-                break;
-        }
-    
-        if (missingField) {
-            return res.sendStatus(400).json({ error: `${missingField} is required` });
+        if(!name){
+            return res.status(400).json({ status: 'Failed', message: `name is required` });
+        }else if(!lastname){
+            return res.status(400).json({ status: 'Failed', message: `lastname is required` });
+        }else if(!username){
+            return res.status(400).json({ status: 'Failed', message: `username is required` });
+        }else if(!email){
+            return res.status(400).json({ status: 'Failed', message: `email is required` });
+        }else if(!password){
+            return res.status(400).json({ status: 'Failed', message: `password is required` });
         }
 
-        const existingUser = await getUserByEmail(email)
-        if(existingUser) {
-            return res.sendStatus(400).json({ error: 'User already exists'});
+        const existingUserByEmail = await getUserByEmail(email)
+        const existingUserByUsername = await getUserByUsername(username)
+        if(existingUserByEmail) {
+            return res.status(400).json({ status: 'Failed', message: 'User already exists'});
         }
 
-        const token = randomToken()
-        const user = await createUser({
+        if(existingUserByUsername){
+            return res.status(400).json({ status: 'Failed', message: 'Username in use'});
+        }
+
+        const salt = randomToken()
+        await createUser({
             name,
             lastname, 
             birthday,
             username,
             email,
             authentication: {
-                token: token,
-                password: authentication(token, password)
+                salt,
+                password: authentication(salt, password)
 
             }
         })
 
-        return res.sendStatus(200).json({
-            status: 'User created successfully',
-            user
+        return res.status(200).json({
+            status: 'Success',
+            message: 'User created successfully',
+            user: {
+                name, lastname, birthday, username, email,
+                authentication: {
+                    salt
+                }
+            }
         }).end()
 
     } catch (error) {
         console.log(error);
         return res.sendStatus(400)
-        
     }
 
 }
