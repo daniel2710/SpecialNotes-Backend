@@ -1,4 +1,5 @@
 import { UserModel } from "../schemas/users";
+import { WorkSpaceModel } from "../schemas/workspace";
 
 export const getUsers = () => {
     return UserModel.find();
@@ -17,15 +18,30 @@ export const getUserById = (id: string) =>{
 }
 
 export const getUserBySessionToken = (sessionToken: string) =>{
-    UserModel.findOne({
+    return UserModel.findOne({
         'authentication.sessionToken': sessionToken
     })
 }
 
 export const createUser = (values: Record<string, any>) =>{
-    return new UserModel(values).save().then((user)=>{
-        user.toObject()
+
+    const newWorkspaceData = {
+        name: 'My workspace',
+        description: 'My workspace',
+        theme: 'light',
+        createdBy: {} // Establecemos el valor a null por ahora, lo actualizaremos más tarde con el ID del usuario
+    };
+
+    return new UserModel(values).save()
+    .then((user) => {
+        newWorkspaceData.createdBy = user._id; // Actualizamos el campo createdBy con el ID del usuario creado
+        const newWorkspace = new WorkSpaceModel(newWorkspaceData); // Creamos una nueva instancia de Workspace con el createdBy actualizado
+        values.workspace = newWorkspace._id
+        return newWorkspace.save(); // Guardamos el espacio de trabajo
     })
+    .catch((error) => {
+        throw new Error(`Error al crear usuario y espacio de trabajo: ${error}`);
+    });
 }
 
 export const deleteUserById = (id: string) =>{
