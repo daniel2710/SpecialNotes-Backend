@@ -1,0 +1,20 @@
+name: Delete Merged Branch
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  delete-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Delete branch
+        run: |
+          git config --global user.name "daniel2710"
+          git config --global user.email "daniel2710es@gmail.com"
+          git push --delete origin ${{ github.event.pull_request.head.ref }}
