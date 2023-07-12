@@ -7,14 +7,14 @@ export const login = async (req: express.Request, res: express.Response) =>{
         const { email, password } = req.body
         
         if(!email){
-            return res.status(400).json({ status: 'Failed', message: `email is required` });
+            return res.status(400).json({ status: 'failed', message: `email is required` });
         }else if(!password){
-            return res.status(400).json({ status: 'Failed', message: `password is required` });
+            return res.status(400).json({ status: 'failed', message: `password is required` });
         }
 
         const user = await getUserByEmail(email).select('+authentication.salt +authentication.password')
         if(!user){
-            return res.status(400).json({ status: 'Failed', message: `user does not exist` });
+            return res.status(400).json({ status: 'failed', message: `user does not exist` });
         }
         
         const expectedHash = authentication(user.authentication?.salt, password)
@@ -45,25 +45,25 @@ export const register = async (req: express.Request, res: express.Response) =>{
     try {
         const { name, lastname, birthday, username, email, password } = req.body;
         if(!name){
-            return res.status(400).json({ status: 'Failed', message: `name is required` });
+            return res.status(400).json({ status: 'failed', message: `name is required` });
         }else if(!lastname){
-            return res.status(400).json({ status: 'Failed', message: `lastname is required` });
+            return res.status(400).json({ status: 'failed', message: `lastname is required` });
         }else if(!username){
-            return res.status(400).json({ status: 'Failed', message: `username is required` });
+            return res.status(400).json({ status: 'failed', message: `username is required` });
         }else if(!email){
-            return res.status(400).json({ status: 'Failed', message: `email is required` });
+            return res.status(400).json({ status: 'failed', message: `email is required` });
         }else if(!password){
-            return res.status(400).json({ status: 'Failed', message: `password is required` });
+            return res.status(400).json({ status: 'failed', message: `password is required` });
         }
 
         const existingUserByEmail = await getUserByEmail(email)
         const existingUserByUsername = await getUserByUsername(username)
         if(existingUserByEmail) {
-            return res.status(400).json({ status: 'Failed', message: 'User already exists'});
+            return res.status(400).json({ status: 'failed', message: 'User already exists'});
         }
 
         if(existingUserByUsername){
-            return res.status(400).json({ status: 'Failed', message: 'Username in use'});
+            return res.status(400).json({ status: 'failed', message: 'Username in use'});
         }
 
         const salt = randomToken()

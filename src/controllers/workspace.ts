@@ -1,10 +1,31 @@
 import express from 'express'
 import { deleteWorkSpaceByCreatedBy, getWorkSpaceByCreatedBy, getWorkSpaceById, getWorkSpaces } from '../methods/workspaces';
+import { paginate } from '../helpers/pagination';
 
-export const getAllWorkSpaces = async (_req: express.Request, res: express.Response) =>{
+export const getAllWorkSpaces = async (req: express.Request, res: express.Response) =>{
+    const currentPage = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 15;
+    
     try {
         const workspaces = await getWorkSpaces()
-        return res.status(200).json(workspaces)
+        const paginatedResult = paginate(workspaces, currentPage, limit, 'workspaces');
+
+        const response = {
+            status: 'success',
+            workspaces: paginatedResult.results,
+            current_page: currentPage,
+            total_pages: paginatedResult.totalPages,
+            next: paginatedResult.hasNextPage,
+            previous: paginatedResult.hasPreviousPage,
+            total_items: paginatedResult.totalItems,
+            items_on_page: paginatedResult.results.length,
+        };
+  
+        if (paginatedResult.results.length === 0 && currentPage != 1) {
+            return res.status(400).json({ status: "failed", message: "There are no results on the current page." });
+        }
+      
+        return res.status(200).json(response);
     } catch (error) {
         console.log(error);
         return res.sendStatus(400)

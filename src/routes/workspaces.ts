@@ -1,6 +1,6 @@
 import express from "express";
 import { deleteWorkSpaceByCreatedByFc, getAllWorkSpaces, getWorkSpaceByCreatedByFc, getWorkSpaceByIdFc, updateWorkSpaceById } from "../controllers/workspace";
-import { isAuthenticated } from "../middlewares";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 export default (router: express.Router) =>{
     router.get('/workspaces', isAuthenticated, getAllWorkSpaces);
