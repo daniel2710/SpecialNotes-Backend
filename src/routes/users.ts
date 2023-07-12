@@ -1,6 +1,6 @@
 import express from "express";
 import { deleteUserByIdFc, getAllUsers, getUserByEmailFc, getUserByIdFc, getUserByUsernameFc, updateUserByIdFc } from "../controllers/users";
-import { isAuthenticated } from "../middlewares";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 export default (router: express.Router) =>{
     router.get('/users', isAuthenticated, getAllUsers);
