@@ -1,7 +1,8 @@
 import express from 'express'
-import { deleteUserById, getUserByEmail, getUserById, getUserByUsername, getUsers } from "../methods/user";
+import { deleteUserById, getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from "../methods/user";
 import { deleteWorkSpaceByCreatedBy } from '../methods/workspaces';
 import { paginate } from '../helpers/pagination';
+import { deleteNotesByUserId } from '../methods/notes';
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     const currentPage = parseInt(req.query.page as string) || 1;
@@ -107,12 +108,29 @@ export const updateUserByIdFc = async (req: express.Request, res: express.Respon
     }
 };
 
+export const updateUserBySessionTokenFc = async (req: express.Request, res: express.Response) => {
+    try {
+        const sessionToken = req.params.sessionToken; 
+        const user = await getUserBySessionToken(sessionToken); 
+        if(user){
+            return res.status(200).json({ status: 'success', user }); 
+        }else{
+            return res.sendStatus(400);   
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+    }
+};
+
 export const deleteUserByIdFc = async (req: express.Request, res: express.Response) => {
     try {
       const { id } = req.params;
   
+      await deleteNotesByUserId(id);
       const deletedUser = await deleteUserById(id);
       const deletedWorkspace = await deleteWorkSpaceByCreatedBy(id)
+
       if(deletedUser && deletedWorkspace){
         return res.status(200).json({ status: 'success', deletedUser, deletedWorkspace});
       }else{

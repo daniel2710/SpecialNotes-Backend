@@ -29,15 +29,15 @@ export const createUser = (values: Record<string, any>) =>{
         name: 'My workspace',
         description: 'My workspace',
         theme: 'light',
-        createdBy: {} // Establecemos el valor a null por ahora, lo actualizaremos más tarde con el ID del usuario
+        createdBy: {} 
     };
 
     return new UserModel(values).save()
     .then((user) => {
-        newWorkspaceData.createdBy = user._id; // Actualizamos el campo createdBy con el ID del usuario creado
-        const newWorkspace = new WorkSpaceModel(newWorkspaceData); // Creamos una nueva instancia de Workspace con el createdBy actualizado
+        newWorkspaceData.createdBy = user._id;
+        const newWorkspace = new WorkSpaceModel(newWorkspaceData); 
         values.workspace = newWorkspace._id
-        return newWorkspace.save(); // Guardamos el espacio de trabajo
+        return newWorkspace.save();
     })
     .catch((error) => {
         throw new Error(`Error al crear usuario y espacio de trabajo: ${error}`);
