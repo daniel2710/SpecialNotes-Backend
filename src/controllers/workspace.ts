@@ -1,6 +1,7 @@
 import express from 'express'
 import { deleteWorkSpaceByCreatedBy, getWorkSpaceByCreatedBy, getWorkSpaceById, getWorkSpaces } from '../methods/workspaces';
 import { paginate } from '../helpers/pagination';
+import { enumTheme } from '../enums/workspace';
 
 export const getAllWorkSpaces = async (req: express.Request, res: express.Response) =>{
     const currentPage = parseInt(req.query.page as string) || 1;
@@ -86,7 +87,6 @@ export const updateWorkSpaceById = async (req: express.Request, res: express.Res
         const workspace = await getWorkSpaceById(id);
         
         if(workspace){
-            // Verificar si se proporcionaron datos actualizados específicos
             if (updatedWorkSpaceData.name) {
                 workspace.name = updatedWorkSpaceData.name;
             }
@@ -96,7 +96,7 @@ export const updateWorkSpaceById = async (req: express.Request, res: express.Res
             }
 
             if(updatedWorkSpaceData.theme){
-                if(updatedWorkSpaceData.theme === 'light' || updatedWorkSpaceData.theme === 'dark'){
+                if(updatedWorkSpaceData.theme in enumTheme){
                     workspace.theme = updatedWorkSpaceData.theme
                 }else{
                     return res.status(400).json({ status: 'failed', message: 'theme not found' }) 
@@ -114,5 +114,5 @@ export const updateWorkSpaceById = async (req: express.Request, res: express.Res
       console.log(error);
       return res.sendStatus(400);
     }
-  };
+};
   

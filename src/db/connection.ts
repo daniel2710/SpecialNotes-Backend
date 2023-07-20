@@ -11,7 +11,7 @@ function connectToDatabase() {
 
   mongoose.connection.on('error', (error) => {
     console.error('Database connection error (MongoDB):', error);
-    process.exit(1); // Si hay un error en la conexión, detiene la ejecución de la aplicación.  
+    process.exit(1);
   });
 
   mongoose.connection.once('open', () => {
