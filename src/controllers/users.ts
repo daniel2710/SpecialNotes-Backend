@@ -1,9 +1,6 @@
 import express from 'express'
-import { deleteUserById, getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from "../methods/user";
-import { deleteWorkSpaceByCreatedBy } from '../methods/workspaces';
+import { getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from "../methods/user";
 import { paginate } from '../helpers/pagination';
-import { deleteNotesByUserId } from '../methods/notes';
-
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     const currentPage = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 15;
@@ -122,22 +119,3 @@ export const updateUserBySessionTokenFc = async (req: express.Request, res: expr
         return res.sendStatus(400);
     }
 };
-
-export const deleteUserByIdFc = async (req: express.Request, res: express.Response) => {
-    try {
-      const { id } = req.params;
-  
-      await deleteNotesByUserId(id);
-      const deletedUser = await deleteUserById(id);
-      const deletedWorkspace = await deleteWorkSpaceByCreatedBy(id)
-
-      if(deletedUser && deletedWorkspace){
-        return res.status(200).json({ status: 'success', deletedUser, deletedWorkspace});
-      }else{
-        return res.sendStatus(404)
-      }
-    } catch (error) {
-      console.log(error);
-      return res.sendStatus(400);
-    }
-}

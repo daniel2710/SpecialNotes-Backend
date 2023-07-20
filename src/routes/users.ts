@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteUserByIdFc, getAllUsers, getUserByEmailFc, getUserByIdFc, getUserByUsernameFc, updateUserByIdFc, updateUserBySessionTokenFc } from "../controllers/users";
+import { getAllUsers, getUserByEmailFc, getUserByIdFc, getUserByUsernameFc, updateUserByIdFc, updateUserBySessionTokenFc } from "../controllers/users";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 export default (router: express.Router) =>{
@@ -10,6 +10,4 @@ export default (router: express.Router) =>{
     router.get('/users/token/:sessionToken', isAuthenticated, updateUserBySessionTokenFc);
 
     router.put('/users/:id', isAuthenticated, updateUserByIdFc);
-
-    router.delete('/users/:id', isAuthenticated, deleteUserByIdFc);
 }   

@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllNotes, getNoteByIdFc, createNoteFc, deleteNoteByIdFc } from "../controllers/notes";
+import { getAllNotes, getNoteByIdFc, createNoteFc, deleteNoteByIdFc, updateNoteById } from "../controllers/notes";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 
 export default (router: express.Router) =>{
@@ -7,6 +7,8 @@ export default (router: express.Router) =>{
     router.get('/notes/:id', isAuthenticated, getNoteByIdFc);
 
     router.post('/notes', isAuthenticated, createNoteFc)
+
+    router.patch('/notes/:id', isAuthenticated, updateNoteById)
 
     router.delete('/notes/:id', isAuthenticated, deleteNoteByIdFc)
 }   

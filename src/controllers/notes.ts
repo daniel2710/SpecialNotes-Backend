@@ -4,6 +4,7 @@ import { paginate } from '../helpers/pagination';
 import { settingsNotesModel } from '../schemas/settingsNotes';
 import { getUserBySessionToken } from '../methods/user';
 import { getWorkSpaceByCreatedBy } from '../methods/workspaces';
+import { enumBackgroundColor } from '../enums/notes';
 
 export const getAllNotes = async (req: express.Request, res: express.Response) => {
     const currentPage = parseInt(req.query.page as string) || 1;
@@ -84,6 +85,63 @@ export const createNoteFc = async (req: express.Request, res: express.Response) 
         return res.sendStatus(400)
     }
 }
+
+export const updateNoteById = async (req: express.Request, res: express.Response) => {
+    try {
+        const { id } = req.params;
+        const updatedNoteData = req.body;
+  
+        const note = await getNoteById(id);
+        
+        if(note){
+            if (updatedNoteData.title) {
+                note.title = updatedNoteData.title;
+            }
+
+            if(updatedNoteData.content){
+                note.content = updatedNoteData.content
+            }
+
+            if(updatedNoteData.settings){
+
+                if(updatedNoteData.settings.archived){
+                    if(typeof updatedNoteData.settings.archived === 'boolean'){
+                        note.settings.archived = updatedNoteData.settings.archived
+                    }else{
+                        return res.status(400).json({ status: 'failed', message: 'Data type is not allowed (archived)' }) 
+                    }
+                }
+
+                if(updatedNoteData.settings.pinned){
+                    if(typeof updatedNoteData.settings.pinned === 'boolean'){
+                        note.settings.pinned = updatedNoteData.settings.pinned
+                    }else{
+                        return res.status(400).json({ status: 'failed', message: 'Data type is not allowed (pinned)' }) 
+                    }
+                }
+
+                if(updatedNoteData.settings.backgroundColor){
+                    if(updatedNoteData.settings.backgroundColor in enumBackgroundColor){
+                        note.settings.backgroundColor = updatedNoteData.settings.backgroundColor
+                    }else{
+                        return res.status(400).json({ status: 'failed', message: `BackgroundColor '${updatedNoteData.settings.backgroundColor}' value is not allowed` }) 
+                    }
+                }
+
+            }
+      
+            await note.save();
+
+            return res.status(200).json(note).end();
+        }else{
+            return res.sendStatus(404)
+        }
+  
+    } catch (error) {
+      console.log(error);
+      return res.sendStatus(400);
+    }
+};
 
 export const deleteNoteByIdFc = async (req: express.Request, res: express.Response) => {
     try {
