@@ -6,9 +6,9 @@ export const randomToken = () =>{
   return crypto.randomBytes(128).toString('base64');
 }
 
-export const authentication = (token: string, password: string) =>{
+export const authentication: any = (salt: string , password: string) =>{
   if(SECRET_KEY){
-    return crypto.createHmac('sha256', [token, password].join('/')).update(SECRET_KEY).digest()
+    return crypto.createHmac('sha256', [salt, password].join('/')).update(SECRET_KEY).digest('hex')
   }
 
   return null;

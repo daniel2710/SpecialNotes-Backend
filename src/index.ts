@@ -7,9 +7,11 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';  
 import connectToDatabase from './db/connection';
 import routes from './routes';
+import requestLogger from './middlewares/logger';
 
 dotenv.config();    
 const PORT = 8080
+export const URL = 'http://localhost:8080'
 const app = express()
   
 app.use(cors({
@@ -18,6 +20,7 @@ app.use(cors({
 app.use(compression())
 app.use(cookieParser())
 app.use(bodyParser.json())
+app.use(requestLogger)
 
 connectToDatabase()
 
