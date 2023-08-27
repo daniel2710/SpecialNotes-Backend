@@ -1,6 +1,6 @@
 export enum enumBackgroundColor{
-    "default",
-    "black",
-    "white",
-    "red"
+    "rich-black",
+    "cliff-blue",
+    "qahvei-brown",
+    "cherry-red"
 }

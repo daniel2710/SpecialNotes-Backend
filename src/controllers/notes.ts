@@ -1,10 +1,10 @@
 import express from 'express'
 import { createNote, deleteNoteById, getNoteById, getNotes } from '../methods/notes';
 import { paginate } from '../helpers/pagination';
-import { settingsNotesModel } from '../schemas/settingsNotes';
 import { getUserBySessionToken } from '../methods/user';
 import { getWorkSpaceByCreatedBy } from '../methods/workspaces';
 import { enumBackgroundColor } from '../enums/notes';
+import { settingsNotesModel } from '../schemas/settingsNotes';
 
 export const getAllNotes = async (req: express.Request, res: express.Response) => {
     const currentPage = parseInt(req.query.page as string) || 1;
@@ -53,8 +53,8 @@ export const getNoteByIdFc = async (req: express.Request, res: express.Response)
 
 export const createNoteFc = async (req: express.Request, res: express.Response) =>{
     try {
-        const { title, content } = req.body;
-        const settings = new settingsNotesModel();
+        let { title, content, settings } = req.body;
+        const settingsDefault = new settingsNotesModel();
         const sessionToken = req.cookies['SPECIALNOTES-AUTH']
 
         if(!title){
@@ -63,22 +63,60 @@ export const createNoteFc = async (req: express.Request, res: express.Response) 
             return res.status(400).json({ status: 'failed', message: `content is required` });
         }
 
+        if(settings){
+            if(settings.archived){
+                if(typeof settings.archived !== 'boolean'){
+                    return res.status(400).json({ status: 'failed', message: 'Data type is not allowed (archived)' }) 
+                }
+            }
+
+            if(settings.pinned){
+                if(typeof settings.pinned !== 'boolean'){
+                    return res.status(400).json({ status: 'failed', message: 'Data type is not allowed (pinned)' }) 
+                }
+            }
+
+            if(settings.backgroundColor){
+                if(!(settings.backgroundColor in enumBackgroundColor)){
+                    return res.status(400).json({ status: 'failed', message: `BackgroundColor '${settings.backgroundColor}' value is not allowed` }) 
+                }
+            }
+
+        }
+
         const user = await getUserBySessionToken(sessionToken)
         const workSpace = await getWorkSpaceByCreatedBy(String(user?._id))
         
-        const note = await createNote({
-            userId: user?._id,
-            workSpaceId: workSpace?._id,
-            title,
-            content,
-            settings
-        })
+        if(settings){
+            console.log("settings", settings)
+            const note = await createNote({
+                userId: user?._id,
+                workSpaceId: workSpace?._id,
+                title,
+                content,
+                settings
+            })
+            return res.status(200).json({
+                status: 'Success',
+                message: 'Note created successfully',
+                note
+            }).end()
+        }else{
+            console.log("settingsDefault", settingsDefault)
+            const note = await createNote({
+                userId: user?._id,
+                workSpaceId: workSpace?._id,
+                title,
+                content,
+                settings:settingsDefault
+            })
+            return res.status(200).json({
+                status: 'Success',
+                message: 'Note created successfully',
+                note
+            }).end()
+        }
 
-        return res.status(200).json({
-            status: 'Success',
-            message: 'Note created successfully',
-            note
-        }).end()
 
     } catch (error) {
         console.log(error);
