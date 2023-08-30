@@ -7,6 +7,7 @@ const NotesSchema = new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     settings: { type: settingsNotesSchema, required: false },
+    createdAt: { type: Date, default: Date.now }
 })
 
 export const NotesModel = mongoose.model("Notes", NotesSchema)
