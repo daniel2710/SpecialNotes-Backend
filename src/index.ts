@@ -16,7 +16,7 @@ const app = express()
   
 app.use(cors({
     credentials: true,
-    origin: ['https://special-notes-frontend.vercel.app/', 'https://specialnotesback.onrender.com/']
+    origin: ['https://special-notes-frontend.vercel.app', 'https://specialnotesback.onrender.com']
 }))
 app.use(compression())
 app.use(cookieParser())
@@ -28,7 +28,7 @@ connectToDatabase()
 const server = http.createServer(app);
 
 server.listen(PORT, ()=>{
-    console.log("server listening on https://specialnotesback.onrender.com/");
+    console.log("server listening on https://specialnotesback.onrender.com");
 });
 
 app.use('/', routes())
