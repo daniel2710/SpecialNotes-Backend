@@ -6,13 +6,16 @@ import { deleteWorkSpaceByCreatedBy } from '../methods/workspaces';
 
 export const login = async (req: express.Request, res: express.Response) =>{
     try {
-        const { username, password } = req.body
+        let { username, password } = req.body
         
         if(!username){
             return res.status(400).json({ status: 'failed', message: `username is required` });
         }else if(!password){
             return res.status(400).json({ status: 'failed', message: `password is required` });
         }
+
+        // Convert username, name, and lastname to lowercase
+        username = username.toLowerCase();
 
         const user = await getUserByUsername(username).select('+authentication.salt +authentication.password')
         if(!user){
