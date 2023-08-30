@@ -1,6 +1,7 @@
 import express from 'express'
 import { getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from "../methods/user";
 import { paginate } from '../helpers/pagination';
+
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     const currentPage = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 15;
@@ -105,7 +106,7 @@ export const updateUserByIdFc = async (req: express.Request, res: express.Respon
     }
 };
 
-export const updateUserBySessionTokenFc = async (req: express.Request, res: express.Response) => {
+export const getUserBySessionTokenFc = async (req: express.Request, res: express.Response) => {
     try {
         const sessionToken = req.params.sessionToken; 
         const user = await getUserBySessionToken(sessionToken); 

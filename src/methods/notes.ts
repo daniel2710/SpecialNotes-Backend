@@ -4,6 +4,10 @@ export const getNotes = () => {
     return NotesModel.find();
 }
 
+export const getNotesByIdUser = (id: string) => {
+    return NotesModel.find({ userId: id });
+}
+
 export const getNoteById = (id: string) =>{
     return NotesModel.findById(id)
 }
