@@ -16,7 +16,7 @@ const app = express()
   
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:3000'
+    origin: 'https://special-notes-frontend.vercel.app/'
 }))
 app.use(compression())
 app.use(cookieParser())
