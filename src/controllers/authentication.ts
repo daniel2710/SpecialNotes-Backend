@@ -31,7 +31,7 @@ export const login = async (req: express.Request, res: express.Response) =>{
         await user.save();
 
         res.cookie('SPECIALNOTES-AUTH', user.authentication!.sessionToken, {
-            domain: 'localhost',
+            domain: 'https://special-notes-frontend.vercel.app',
             path: '/'
         })
         return res.status(200).json(user).end()
