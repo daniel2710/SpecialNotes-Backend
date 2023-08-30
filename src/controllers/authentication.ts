@@ -22,7 +22,7 @@ export const login = async (req: express.Request, res: express.Response) =>{
         const expectedHash = authentication(user.authentication?.salt, password)
         
         if(user.authentication?.password !== expectedHash){
-            return res.status(400).json({ status: 'Incorrect password' });
+            return res.status(400).json({ status: 'failed', message: 'Incorrect password' });
         }
 
         const salt = randomToken()
