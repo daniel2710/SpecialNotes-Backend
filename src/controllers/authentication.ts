@@ -45,7 +45,7 @@ export const login = async (req: express.Request, res: express.Response) =>{
 export const register = async (req: express.Request, res: express.Response) =>{
     
     try {
-        const { name, lastname, birthday, username, email, password } = req.body;
+        let { name, lastname, birthday, username, email, password } = req.body;
         if(!name){
             return res.status(400).json({ status: 'failed', message: `name is required` });
         }else if(!lastname){
@@ -55,6 +55,12 @@ export const register = async (req: express.Request, res: express.Response) =>{
         }else if(!password){
             return res.status(400).json({ status: 'failed', message: `password is required` });
         }
+
+        // Convert username, name, and lastname to lowercase
+        username = username.toLowerCase();
+        name = name.toLowerCase();
+        lastname = lastname.toLowerCase();
+
 
         const existingUserByUsername = await getUserByUsername(username)
 
