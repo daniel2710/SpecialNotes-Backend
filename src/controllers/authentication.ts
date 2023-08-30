@@ -31,7 +31,8 @@ export const login = async (req: express.Request, res: express.Response) =>{
         await user.save();
 
         res.cookie('SPECIALNOTES-AUTH', user.authentication!.sessionToken, {
-            sameSite: 'none'
+            sameSite: 'none',
+            secure: true
         })
         return res.status(200).json(user).end()
 
