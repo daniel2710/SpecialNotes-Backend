@@ -9,6 +9,7 @@
     "start": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "commonjs",
   "keywords": [],
   "author": "Daniel Steven De Avila Peñate",
   "license": "ISC",
