@@ -1,1 +1,3 @@
 # SpecialNotes-Backend
+
+⚡FIRST VERSION ⚡
