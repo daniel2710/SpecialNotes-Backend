@@ -10,13 +10,13 @@ import routes from './routes';
 import requestLogger from './middlewares/logger';
 
 dotenv.config();    
-const PORT = 8080
-export const URL = 'http://localhost:8080'
+const PORT = process.env.PORT ?? 8080
+export const URL = 'https://specialnotesback.onrender.com'
 const app = express()
   
 app.use(cors({
     credentials: true,
-    origin: 'https://special-notes-frontend.vercel.app/'
+    origin: ['https://special-notes-frontend.vercel.app/', 'https://specialnotesback.onrender.com/']
 }))
 app.use(compression())
 app.use(cookieParser())
@@ -28,7 +28,7 @@ connectToDatabase()
 const server = http.createServer(app);
 
 server.listen(PORT, ()=>{
-    console.log("server listening on http://localhost:8080/");
+    console.log("server listening on https://specialnotesback.onrender.com/");
 });
 
 app.use('/', routes())
